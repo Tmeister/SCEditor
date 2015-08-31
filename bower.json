@@ -1,32 +1,33 @@
 {
-  "name": "sceditor-bower",
-  "version": "1.4.7.1",
-  "homepage": "https://github.com/Tmeister/SCEditor",
+  "name": "json-editor",
+  "version": "0.7.24",
   "authors": [
-    "Sam Clarke"
+    "Jeremy Dorn <jeremy@jeremydorn.com>"
   ],
-  "description": "A lightweight WYSIWYG BBCode and XHTML editor bower installer ready.",
-  "main": [
-    "minified/jquery.sceditor.min.js",
-    "minified/jquery.sceditor.xhtml.min.js",
-    "minified/jquery.sceditor.bbcode.min.js",
-    "minified/jquery.sceditor.default.min.css"
-  ],
-  "moduleType": [
-    "globals"
-  ],
+  "description": "JSON Schema based editor",
+  "main": "dist/jsoneditor.js",
   "keywords": [
-    "wysiwyg",
-    "editor",
-    "HTML",
-    "BBCode"
+    "json",
+    "schema",
+    "jsonschema",
+    "editor"
   ],
   "license": "MIT",
   "ignore": [
     "**/.*",
-    "node_modules",
-    "bower_components",
-    "test",
-    "tests"
-  ]
+    "*.md",
+    "tests",
+    "examples",
+    "demo.html",
+    "*.png",
+    "package.json",
+    "Gruntfile.js",
+    "src"
+  ],
+  "devDependencies": {
+    "bootstrap": "~3.3.5",
+    "SCEditor": "~1.4.7",
+    "font-awesome": "~4.3.0",
+    "summernote": "~0.6.7"
+  }
 }

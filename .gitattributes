@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 *.css   text eol=lf
 *.html  text eol=lf
 *.js    text eol=lf
@@ -7,3 +8,6 @@
 *.php   text eol=lf
 *.txt   text eol=lf
 *.yml   text eol=lf
+=======
+dist/* merge=own
+>>>>>>> fc57210e0adaab0910d5022ff279c03b013e74f3

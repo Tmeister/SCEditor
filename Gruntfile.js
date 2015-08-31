@@ -1,423 +1,143 @@
-/*global module:false, require:false, process:false*/
-module.exports = function (grunt) {
-	'use strict';
+'use strict';
 
-	require('time-grunt')(grunt);
+module.exports = function( grunt ) {
+  grunt.initConfig( {
+    concat_sourcemap: {
+      options: {
+        sourcesContent: true
+      },
+      target: {
+        files: {
+          'dist/jsoneditor.js': [
 
-	grunt.initConfig({
-		pkg: grunt.file.readJSON('package.json'),
+            // License & version info, start the containing closure
+            'src/intro.js',
 
-		// Used for Sauce Labs. Creates a server for the
-		// unit tests to be served from.
-		connect: {
-			server: {
-				options: {
-					port: 9999,
-					hostname: '*'
-				}
-			}
-		},
+            // Simple inheritance
+            'src/class.js',
+            // IE9 polyfills
+            'src/ie9.js',
+            // Utils like extend, each, and trigger
+            'src/utilities.js',
 
-		// Runs the QUnit unit tests in multiple browsers automatically.
-		'saucelabs-qunit': {
-			all: {
-				options: {
-					username: 'sceditor',
-					key: process.env.SCEDITOR_SAUCE_KEY,
-					urls: ['http://127.0.0.1:9999/tests/unit/index.html'],
-					tunnelTimeout: 5,
-					build: process.env.TRAVIS_JOB_ID ||
-						('Local ' + (new Date()).toISOString()),
-					concurrency: 3,
-					browsers: grunt.file.readJSON('browsers.json'),
-					'max-duration': 120,
-					sauceConfig: {
-						'video-upload-on-pass': false
-					},
-					testname: 'SCEditor QUnit unit tests'
-				}
-			}
-		},
+            // The main JSONEditor class
+            'src/core.js',
 
-		// Runs the unit tests
-		qunit: {
-			all: ['tests/unit/index.html']
-		},
+            // JSON Schema validator
+            'src/validator.js',
 
-		// Linting for JS files with JSHint
-		jshint: {
-			source: {
-				src: ['src/**/*.js'],
-				options: {
-					jshintrc: '.jshintrc'
-				}
-			},
-			tests: {
-				src: ['tests/**/*.js'],
-				options: {
-					ignores: ['tests/libs/**/*.js'],
-					jshintrc: 'tests/.jshintrc'
-				}
-			},
-			translations: {
-				src: 'languages/**/*.js',
-				options: {
-					jshintrc: 'languages/.jshintrc'
-				}
-			}
-		},
+            // All the editors
+            'src/editor.js',
+            'src/editors/null.js',
+            'src/editors/string.js',
+            'src/editors/number.js',
+            'src/editors/integer.js',
+            'src/editors/object.js',
+            'src/editors/array.js',
+            'src/editors/table.js',
+            'src/editors/multiple.js',
+            'src/editors/enum.js',
+            'src/editors/select.js',
+            'src/editors/multiselect.js',
+            'src/editors/base64.js',
+            'src/editors/upload.js',
+            'src/editors/checkbox.js',
 
-		// Style checking of JS code using JSCS
-		jscs: {
-			source: {
-				src: ['src/**/*.js'],
-				options: {
-					config: '.jscsrc'
-				}
-			},
-			tests: {
-				src: ['tests/**/*.js', '!tests/libs/**/*.js'],
-				options: {
-					config: '.jscsrc'
-				}
-			},
-			translations: {
-				src: 'languages/**/*.js',
-				options: {
-					config: '.jscsrc',
-					maximumLineLength: 400
-				}
-			}
-		},
+            // All the themes and iconlibs
+            'src/theme.js',
+            'src/themes/*.js',
+            'src/iconlib.js',
+            'src/iconlibs/*.js',
 
-		// Removes all the old files from the distributable directory
-		clean: {
-			build: ['minified/'],
-			dist: ['dist/']
-		},
+            // The JS templating engines
+            'src/templates/*.js',
 
-		// Copy files into the distributable directory ready to be compressed
-		// into the ZIP archive
-		copy: {
-			dist: {
-				files: [
-					{
-						expand: true,
-						src: ['minified/**'],
-						dest: 'dist/'
-					},
-					{
-						expand: true,
-						src: ['languages/**'],
-						dest: 'dist/'
-					},
-					{
-						expand: true,
-						cwd: 'src/',
-						src: ['plugins/**.js'],
-						dest: 'dist/development/'
-					},
-					{
-						expand: true,
-						cwd: 'src/',
-						src: 'jquery.sceditor.default.css',
-						dest: 'dist/development/'
-					},
-					{
-						expand: true,
-						cwd: 'src/themes/icons/',
-						src: '*.png',
-						dest: 'dist/development/themes/'
-					},
-					{
-						expand: true,
-						cwd: 'src/themes/icons/',
-						src: 'monocons/**',
-						dest: 'dist/development/themes/'
-					},
-					{
-						expand: true,
-						src: 'README.md',
-						dest: 'dist/'
-					},
-					{
-						expand: true,
-						src: 'MIT.txt',
-						dest: 'dist/'
-					},
-					{
-						expand: true,
-						cwd: 'distributable/data/',
-						src: 'example.html',
-						dest: 'dist/'
-					},
-					{
-						expand: true,
-						src: 'emoticons/**',
-						dest: 'dist/'
-					}
-				]
-			},
-			build: {
-				//TODO: icons
-				files: [
-					{
-						expand: true,
-						cwd: 'src/themes/icons/',
-						src: '*.png',
-						dest: 'minified/themes/'
-					},
-					{
-						expand: true,
-						cwd: 'src/themes/icons/',
-						src: 'monocons/**',
-						dest: 'minified/themes/'
-					}
-				]
-			}
-		},
-//TODO: Improve webpack compression
-		// Convert modules into a single JS file
-		webpack: {
-			build: {
-				entry: './src/jquery.sceditor.js',
-				output: {
-					path: './minified/',
-					filename: 'jquery.sceditor.min.js'
-				},
-				externals: {
-					jquery: 'jQuery'
-				}
-			},
-			dist: {
-				entry: './src/jquery.sceditor.js',
-				output: {
-					path: './dist/development/',
-					filename: 'jquery.sceditor.js'
-				},
-				externals: {
-					jquery: 'jQuery'
-				}
-			}
-		},
+            // Set the defaults
+            'src/defaults.js',
 
-		// Create the XHTML and BBCode bundled JS files
-		concat: {
-			dist: {
-				options: {
-					separator: ';'
-				},
-				files: {
-					'dist/development/jquery.sceditor.bbcode.js': [
-						'dist/development/jquery.sceditor.js',
-						'src/plugins/bbcode.js'
-					],
-					'dist/development/jquery.sceditor.xhtml.js': [
-						'dist/development/jquery.sceditor.js',
-						'src/plugins/xhtml.js'
-					]
-				}
-			}
-		},
+            // Wrapper for $.fn style initialization
+            'src/jquery.js',
 
-		// Minify the JavaScript
-		uglify: {
-			build: {
-				options: {
-					warnings: true,
-					compress: true,
-					mangle: true,
-					banner: '/* SCEditor v<%= pkg.version %> | ' +
-						'(C) 2015, Sam Clarke | sceditor.com/license */\n'
-				},
-				files: [
-					{
-						src: 'minified/jquery.sceditor.min.js',
-						dest: 'minified/jquery.sceditor.min.js'
-					},
-					{
-						src: [
-							'minified/jquery.sceditor.min.js',
-							'src/plugins/bbcode.js'
-						],
-						dest: 'minified/jquery.sceditor.bbcode.min.js'
-					},
-					{
-						src: [
-							'minified/jquery.sceditor.min.js',
-							'src/plugins/xhtml.js'
-						],
-						dest: 'minified/jquery.sceditor.xhtml.min.js'
-					},
-					{
-						expand: true,
-						filter: 'isFile',
-						cwd: 'src/',
-						src: ['plugins/**.js'],
-						dest: 'minified/'
-					}
-				]
-			}
-		},
+            // End the closure
+            'src/outro.js'
+          ],
+        }
+      }
+    },
+    uglify: {
+      dist: {
+        src: 'dist/jsoneditor.js',
+        dest: 'dist/jsoneditor.min.js'
+      },
+      options: {
+        preserveComments: 'some'
+      }
+    },
+    watch: {
+      scripts: {
+        files: [ "src/**/*.js" ],
+        tasks: [ "concat_sourcemap" ]
+      }
+    },
+    jshint: {
+      options: {
+        browser: true,
+        indent: 2,
+        nonbsp: true,
+        nonew: true,
+        immed: true,
+        latedef: true
+      },
+      beforeconcat: [
+        'src/class.js',
+        'src/ie9.js',
 
-		// Convert the less CSS theme files into CSS
-		less: {
-			build: {
-				options: {
-					paths: ['src/themes/'],
-					cleancss: true
-				},
-				files: [
-					{
-						expand: true,
-						filter: 'isFile',
-						cwd: 'src/themes/',
-						src: ['*'],
-						dest: 'minified/themes/',
-						ext: '.min.css'
-					}
-				]
-			},
-			dist: {
-				options: {
-					paths: ['src/themes/'],
-					cleancss: true
-				},
-				files: [
-					{
-						expand: true,
-						filter: 'isFile',
-						cwd: 'src/themes/',
-						src: ['*'],
-						dest: 'dist/development/themes/',
-						ext: '.css'
-					}
-				]
-			}
-		},
+        // Utils like extend, each, and trigger
+        'src/utilities.js',
 
-		// Manage CSS vendor prefixes
-		autoprefixer: {
-			build: {
-				options: {
-					browsers: ['last 4 versions', 'ie 6', 'ie 7', 'ie 8', 'ie 9']
-				},
-				expand: true,
-				flatten: true,
-				src: 'minified/themes/*.css',
-				dest: 'minified/themes/'
-			}
-		},
+        // The main JSONEditor class
+        'src/core.js',
 
-		// Compress the WYSIWYG CSS
-		cssmin: {
-			build: {
-				files: [
-					{
-						'minified/jquery.sceditor.default.min.css': ['src/jquery.sceditor.default.css']
-					},
-					{
-						expand: true,
-						cwd: 'minified/themes',
-						src: ['*.min.css'],
-						dest: 'minified/themes',
-						ext: '.min.css'
-					}
-				]
-			}
-		},
+        // JSON Schema validator
+        'src/validator.js',
 
-		// Creates the distributable ZIP file
-		compress: {
-			dist: {
-				options: {
-					archive: 'distributable/sceditor-<%= pkg.version %>.zip'
-				},
-				files: [
-					{
-						expand: true,
-						cwd: 'dist/',
-						src: ['**']
-					}
-				]
-			}
-		},
+        // All the editors
+        'src/editor.js',
+        'src/editors/*.js',
 
-		githooks: {
-			all: {
-				'pre-commit': 'test'
-			}
-		},
+        // All the themes and iconlibs
+        'src/theme.js',
+        'src/themes/*.js',
+        'src/iconlib.js',
+        'src/iconlibs/*.js',
 
-		devUpdate: {
-			main: {
-				options: {
-					updateType: 'force',
-					semver: false
-				}
-			}
-		}
-	});
+        // The JS templating engines
+        'src/templates/*.js',
 
+        // Set the defaults
+        'src/defaults.js',
 
-	grunt.loadNpmTasks('grunt-autoprefixer');
-	grunt.loadNpmTasks('grunt-contrib-clean');
-	grunt.loadNpmTasks('grunt-contrib-compress');
-	grunt.loadNpmTasks('grunt-contrib-concat');
-	grunt.loadNpmTasks('grunt-contrib-connect');
-	grunt.loadNpmTasks('grunt-contrib-copy');
-	grunt.loadNpmTasks('grunt-contrib-cssmin');
-	grunt.loadNpmTasks('grunt-contrib-jshint');
-	grunt.loadNpmTasks('grunt-contrib-less');
-	grunt.loadNpmTasks('grunt-contrib-qunit');
-	grunt.loadNpmTasks('grunt-contrib-uglify');
-	grunt.loadNpmTasks('grunt-jscs');
-	grunt.loadNpmTasks('grunt-saucelabs');
-	grunt.loadNpmTasks('grunt-webpack');
-	grunt.loadNpmTasks('grunt-githooks');
-	grunt.loadNpmTasks('grunt-dev-update');
+        // Wrapper for $.fn style initialization
+        'src/jquery.js'
+      ],
+      afterconcat: {
+        options: {
+          undef: true
+        },
+        files: {
+          src: [ 'dist/jsoneditor.js' ]
+        }
+      }
+    }
+  } );
 
+  // These plugins provide necessary tasks.
+  grunt.loadNpmTasks( 'grunt-contrib-uglify' );
+  grunt.loadNpmTasks( 'grunt-contrib-watch' );
+  grunt.loadNpmTasks( 'grunt-contrib-jshint' );
+  grunt.loadNpmTasks( 'grunt-concat-sourcemap' );
 
-	grunt.registerTask('default', ['test']);
+  // Default task.
+  grunt.registerTask( 'default', [ 'jshint:beforeconcat', 'concat_sourcemap', 'jshint:afterconcat', 'uglify' ] );
 
-	// Sauce Labs. Runs the QUnit tests in multiple browsers automatically.
-	grunt.registerTask('sauce', ['connect', 'saucelabs-qunit']);
-
-	// Lints the JS and runs the unit tests
-	grunt.registerTask('test', ['jshint', 'jscs', 'qunit']);
-
-	// Lints JS, runs unit tests and then runs unit tests via Sauce Labs.
-	grunt.registerTask('full-test', ['test', 'sauce']);
-
-	// Minifies the source
-	grunt.registerTask('build', [
-		'clean:build',
-		'copy:build',
-		'webpack:build',
-		'uglify:build',
-		'less:build',
-		'autoprefixer:build',
-		'cssmin:build'
-	]);
-
-	// Creates the simplified distributable ZIP
-	grunt.registerTask('release', [
-		'test',
-		'build',
-		'clean:dist',
-		'webpack:dist',
-		'concat:dist',
-		'copy:dist',
-		'less:dist',
-		'compress:dist',
-		'clean:dist'
-	]);
-
-	// Alias dist to release for backwards compatibility
-	grunt.registerTask('dist', ['release']);
-
-	// Update dev dependencies
-	grunt.registerTask('dev-upd', [
-		'devUpdate:main'
-	]);
 };
