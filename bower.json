@@ -1,0 +1,32 @@
+{
+  "name": "sceditor-bower",
+  "version": "1.4.7",
+  "homepage": "https://github.com/Tmeister/SCEditor",
+  "authors": [
+    "Sam Clarke"
+  ],
+  "description": "A lightweight WYSIWYG BBCode and XHTML editor bower installer ready.",
+  "main": [
+    "minified/jquery.sceditor.min.js",
+    "minified/jquery.sceditor.xhtml.min.js",
+    "minified/jquery.sceditor.bbcode.min.js",
+    "minified/jquery.sceditor.default.min.css"
+  ],
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "wysiwyg",
+    "editor",
+    "HTML",
+    "BBCode"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
